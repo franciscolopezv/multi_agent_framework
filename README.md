@@ -13,21 +13,26 @@ This project is a proof-of-concept for an event-driven multi-agent orchestration
 - 📦 State persistence via MongoDB
 - 🔁 Asynchronous processing across microservices
 - 🌐 Supports HTTP-based or local agents as well
+- 🛠️ User-defined agent registration with automatic code generation
+- 🐳 Dockerized runtime for framework and agents
+- 📈 OpenTelemetry tracing integrated with Jaeger
 
 ---
 
 ## 🧩 Architecture Overview
 
-```mermaid
-graph TD
-    User["User Request"] -->|workflow.request| Kafka[Kafka Broker]
-    Kafka -->|dispatch| Framework[Orchestration Engine]
-    Framework -->|invoke| AppDesigner[App Designer Agent (HTTP)]
-    Framework -->|publish| Kafka
-    Kafka --> TerraformAgent[Terraform Agent (Kafka)]
-    Kafka --> KafkaExpertAgent[Kafka Expert Agent (Kafka)]
-    Kafka -->|workflow.output| OutputLogger[Workflow Output Logger]
-    Framework --> MongoDB[MongoDB (state)]
+```puml
+@startuml
+actor User
+User -> Kafka : workflow.request
+Kafka -> Framework : dispatch
+Framework -> AppDesigner : HTTP invoke
+Framework -> Kafka : publish (step.kafka.request)
+Kafka -> TerraformAgent : Kafka invoke
+Kafka -> KafkaExpertAgent : Kafka invoke
+Framework -> MongoDB : store state
+Kafka -> OutputLogger : workflow.output
+@enduml
 ```
 
 ---
@@ -38,6 +43,7 @@ graph TD
 .
 ├── framework/            # Core engine: orchestrator, event loop, handlers
 ├── agents/               # All agent code (app_designer, terraform, kafka)
+├── user_generated/       # Auto-created user agents with Docker configs
 ├── runner/               # Scripts to trigger workflows
 ├── docker-compose.yml    # Local dev stack
 ├── Dockerfile.*          # One per service type
@@ -94,6 +100,9 @@ python framework/runner/send_workflow_request.py
 | `KAFKA_BOOTSTRAP_SERVERS` | Kafka connection string          |
 | `MONGODB_URI`         | MongoDB connection string            |
 | `OPENAI_API_KEY`      | API Key for LLM agent calls          |
+| `OTEL_SERVICE_NAME`   | Tracer name (Jaeger/OTel support)    |
+| `JAEGER_HOST`         | Jaeger agent hostname                |
+| `JAEGER_PORT`         | Jaeger agent UDP port (default 6831) |
 
 ---
 
@@ -101,11 +110,11 @@ python framework/runner/send_workflow_request.py
 
 - [ ] Parallel branches & conditional flows
 - [ ] Secure agent registry and permissions
-- [ ] External user-facing notification API
-- [ ] Retry, error handling, and timeouts
+- [ ] External user-facing workflow API and dashboard
+- [ ] Full Kubernetes and Lambda support
+- [ ] LangFlow UI integration with event orchestration
 
 ---
 
 ## 📣 Contact
 Made with ❤️ for experimentation and extensibility. Contributions welcome!
-
