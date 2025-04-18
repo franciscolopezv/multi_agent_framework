@@ -1,0 +1,9 @@
+langchain
+langchain-openai
+openai
+confluent-kafka==2.9.0
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-jaeger
+opentelemetry-instrumentation-requests
+opentelemetry-instrumentation-confluent-kafka

@@ -1,0 +1,4 @@
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-jaeger
+jaeger-client==4.6.0

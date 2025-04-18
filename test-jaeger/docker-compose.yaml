@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  traced-app:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -r requirements.txt &&
+            python traced_app.py"
+    environment:
+      - OTEL_SERVICE_NAME=traced-app
+      - JAEGER_HOST=jaeger
+      - JAEGER_PORT=6831
+    depends_on:
+      - jaeger
+    networks:
+    - app-net
+
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"       # UI
+      - "6831:6831/udp"     # Agent ingest
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

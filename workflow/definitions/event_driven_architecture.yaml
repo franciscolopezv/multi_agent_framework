@@ -1,0 +1,24 @@
+workflow:
+  id: event-driven-001
+  name: event_driven_architecture
+  entry_point: app_designer
+  steps:
+    - name: app_designer
+      next: terraform
+      protocol: http
+      endpoint: http://localhost:8001/invoke
+      input_keys: ["input"]
+
+    - name: terraform
+      next: kafka
+      protocol: local
+      module: agents.terraform_generator
+      function: terraform_node
+      input_keys: ["design"]
+
+    - name: kafka
+      next: end
+      protocol: local
+      module: agents.kafka_expert
+      function: kafka_node
+      input_keys: ["design"]
